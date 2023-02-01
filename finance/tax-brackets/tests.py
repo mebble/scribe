@@ -1,12 +1,11 @@
 import unittest
-import math
 from script import calculate_tax
 
 brackets = [
-    (0, 2_50_000, 0),
-    (2_50_000, 5_00_000, 5),
-    (5_00_000, 10_00_000, 10),
-    (10_00_000, math.inf, 30),
+    (0, 0),
+    (2_50_000, 5),
+    (5_00_000, 10),
+    (10_00_000, 30),
 ]
 
 class TestTaxCalculator(unittest.TestCase):
