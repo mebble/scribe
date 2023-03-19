@@ -1,9 +1,15 @@
 # Incremental cost
 
+## Run
+
+```
+deno run main.ts
+```
+
 ## Tests
 
 ```
-deno test main.ts
+deno test lib.ts
 ```
 
 ## Resources
