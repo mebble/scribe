@@ -13,7 +13,7 @@ def calculate_tax(brackets, income):
         return 0
 
     last_breakpoint, last_rate = applicable_brackets[-1]
-    amounts_with_rate = [(next_bracket[0] - bracket[0], bracket[1]) for bracket, next_bracket in _pairwise(applicable_brackets)]
+    amounts_with_rate = [(next_breakpoint - prev_breakpoint, rate) for [prev_breakpoint, rate], [next_breakpoint, _] in _pairwise(applicable_brackets)]
     amounts_with_rate.append((income - last_breakpoint, last_rate))
 
     return sum([amount * (rate / 100) for amount, rate in amounts_with_rate])
