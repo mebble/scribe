@@ -1,5 +1,4 @@
-(ns y2022.day8.outdated
-  (:require [clojure.string :as s]))
+(require '[clojure.string :as s])
 
 (defn between? [[bottom top] n]
   (and (>= n bottom)
@@ -14,26 +13,13 @@
        (between? [1 12] (Integer/parseInt m))
        (between? [1 31] (Integer/parseInt d))))
 
-(def months [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December"
-])
+(def months ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"])
 
 (defn format-parts [y m d]
   (->> [y m d]
-         (map #(Integer/parseInt %))
-         (map (partial format "%02d"))
-         (s/join "-")))
+       (map #(Integer/parseInt %))
+       (map (partial format "%02d"))
+       (s/join "-")))
 
 (defn parse-middle-endian [s]
   (let [[m d y] (s/split s #"/")]
@@ -42,9 +28,9 @@
 
 (defn parse-words-date [s]
   (let [[m-and-d y-str] (s/split s #",")
-      [m-word d](s/split m-and-d #" ")
-      m (str (inc (.indexOf months m-word)))
-      y (s/trim y-str)]
+        [m-word d] (s/split m-and-d #" ")
+        m (str (inc (.indexOf months m-word)))
+        y (s/trim y-str)]
     (when (validate-parts y m d)
       (format-parts y m d))))
 
@@ -74,4 +60,3 @@
     (if-not date
       (recur)
       (println date))))
-
