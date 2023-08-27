@@ -1,44 +1,48 @@
 (require '[clojure.string :as s])
 
-(defn between? [[bottom top] n]
+(defn- str->int [s]
+  (Integer/parseInt s))
+
+(defn- between? [[bottom top] n]
   (and (>= n bottom)
        (<= n top)))
 
-(defn digits? [s]
+(defn- digits? [s]
   (every? #(Character/isDigit %) s))
 
-(defn validate-parts [y m d]
+(defn- validate-parts [y m d]
   (and (every? (complement nil?) [y m d])
        (every? digits?           [y m d])
-       (between? [1 12] (Integer/parseInt m))
-       (between? [1 31] (Integer/parseInt d))))
+       (between? [1 12] (str->int m))
+       (between? [1 31] (str->int d))))
 
 (def months ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"])
 
-(defn format-parts [y m d]
+(defn- format-parts [y m d]
   (->> [y m d]
-       (map #(Integer/parseInt %))
+       (map str->int)
        (map (partial format "%02d"))
        (s/join "-")))
 
-(defn parse-middle-endian [s]
+(defn- middle-endian-parts [s]
   (let [[m d y] (s/split s #"/")]
-    (when (validate-parts y m d)
-      (format-parts y m d))))
+    (vector y m d)))
 
-(defn parse-words-date [s]
+(defn- words-date-parts [s]
   (let [[m-and-d y-str] (s/split s #",")
-        [m-word d] (s/split m-and-d #" ")
-        m (str (inc (.indexOf months m-word)))
-        y (s/trim y-str)]
-    (when (validate-parts y m d)
-      (format-parts y m d))))
+        [m-word d]      (s/split m-and-d #" ")
+        m               (str (inc (.indexOf months m-word)))
+        y               (s/trim y-str)]
+    (vector y m d)))
 
 (defn parse-date [s]
-  (cond
-    (s/includes? s "/") (parse-middle-endian s)
-    (s/includes? s ",") (parse-words-date s)
-    :else nil))
+  (when-let [parts (cond
+                     (s/includes? s "/") (middle-endian-parts s)
+                     (s/includes? s ",") (words-date-parts s)
+                     :else nil)]
+    (let [[y m d] parts]
+      (when (validate-parts y m d)
+        (format-parts y m d)))))
 
 (assert (= "1636-09-08" (parse-date "9/8/1636")))
 (assert (= "1636-09-08" (parse-date "September 8, 1636")))
