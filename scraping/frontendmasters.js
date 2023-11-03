@@ -28,10 +28,12 @@ function createTimeString({ h, m, s }) {
     )
 }
 
-Array.from(document.querySelectorAll('a.lesson'))
+const lessons = Array.from(document.querySelectorAll('a.lesson'))
     .map(a => {
         const title = a.querySelector('.title').textContent
         const timestamp = a.querySelector('.timestamp').textContent
         const [start, end] = timestamp.split(' - ')
         return { title, start, end, duration: createTimeString(diff(parseTimeString(start), parseTimeString(end))) }
     })
+
+console.table(lessons)
