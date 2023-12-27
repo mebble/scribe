@@ -1,0 +1,13 @@
+#!/usr/bin/python3
+
+import sys
+
+def snake_to_camel(s):
+    res = ''.join(map(lambda w: w[0].upper() + w[1:], s.split('_')))
+    res = res[0].lower() + res[1:]
+    return res
+
+for line in sys.stdin:
+    print(snake_to_camel(line), end='')
+
+one_two, three_four = [2, 3]
