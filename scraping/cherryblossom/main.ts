@@ -94,8 +94,7 @@ try {
   assert(res.status === 200, "Failed to fetch page")
 
   const tickets = getTicketTypes(await res.text())
-  // const available = tickets.filter(t => t.status !== 'sold out')
-  const available = tickets
+  const available = tickets.filter(t => t.status !== 'sold out')
 
   if (available.length > 0) {
     logger.info("tickets available!", { tickets: available })
