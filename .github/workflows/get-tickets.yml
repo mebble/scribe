@@ -1,0 +1,19 @@
+name: Get available tickets
+on:
+  schedule:
+    - cron: "0 * * * *"
+  workflow_dispatch:
+jobs:
+  get-them-yo:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v1
+        with:
+          deno-version: v1.x
+      - name: Get the tickets
+        working-directory: ./scraping/cherryblossom/
+        env:
+          USERNAME: ${{ secrets.MAILER_USERNAME }}
+          PASSWORD: ${{ secrets.MAILER_PASSWORD }}
+        run: deno run --allow-env --allow-net main.ts
