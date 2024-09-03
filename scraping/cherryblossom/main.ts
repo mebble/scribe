@@ -1,3 +1,4 @@
+import { assert } from "jsr:@std/assert";
 import { SMTPClient } from "https://deno.land/x/denomailer@1.6.0/mod.ts";
 import Logger from "https://deno.land/x/logger@v1.1.6/logger.ts";
 import { DOMParser } from "jsr:@b-fuze/deno-dom";
@@ -5,19 +6,9 @@ import { DOMParser } from "jsr:@b-fuze/deno-dom";
 import "jsr:@std/dotenv/load";
 
 const logger = new Logger();
-
-const res = await fetch("https://www.rockskitickets.com/cherryblossom24/")
-if (res.status === 200) {
-  const tickets = getTicketTypes(await res.text())
-  const available = tickets.filter(t => t.status !== 'sold out')
-  if (available.length > 0) {
-    logger.info("Tickets available!", { tickets: available })
-  } else {
-    logger.info("All tickets sold out!", { tickets: tickets })
-  }
-} else {
-  logger.error("Failed to fetch page", { status: res.status })
-}
+const username = Deno.env.get("USERNAME") || "";
+const password = Deno.env.get("PASSWORD") || "";
+const ticketSite = "https://www.rockskitickets.com/cherryblossom24/"
 
 type TicketType = {
   name: string;
@@ -25,30 +16,33 @@ type TicketType = {
   status: string;
 }
 
+function parseTicketBox(elem, selector) {
+  const found =  elem.querySelector(selector)!
+  assert(found, "Failed to parse the ticket box!")
+  return found.textContent
+}
+
 function getTicketTypes(html: string): TicketType[] {
   const doc = new DOMParser().parseFromString(
     html,
     "text/html",
   );
-  // TODO: error if not ticket types exist
-  // TODO: error if parsing any one fails
+
   const ticketTypes: TicketType[] = Array.from(doc.querySelectorAll(".book-now.ticket-type")!)
     .map(ticketBox => {
       return {
-        name: (ticketBox.querySelector("h5.text-capitalize")!).textContent,
-        price: (ticketBox.querySelector("h5.text-primary")!).textContent,
-        status: (ticketBox.querySelector("a")!).textContent.trim().toLowerCase(),
+        name: parseTicketBox(ticketBox, "h5.text-capitalize"),
+        price: parseTicketBox(ticketBox, "h5.text-primary"),
+        status: parseTicketBox(ticketBox, "a").trim().toLowerCase(),
       }
     })
+
+  assert(ticketTypes.length > 0, "No ticket boxes were found!")
+
   return ticketTypes
 }
 
-async function sendMail() {
-  const username = Deno.env.get("USERNAME") || "";
-  const password = Deno.env.get("PASSWORD") || "";
-
-  logger.info("using email address", { email: username });
-
+async function sendMail(username, password, subject, body) {
   const client = new SMTPClient({
     connection: {
       hostname: "smtp.gmail.com",
@@ -61,19 +55,56 @@ async function sendMail() {
     },
   });
 
-  logger.info("successfully connected. Sending mail");
-
   await client.send({
     from: username,
     to: username,
-    subject: "example",
-    content: "Hohohehe",
-    html: "<p><h1>Test 2</h1>hoho</p>",
+    subject: subject,
+    content: "...",
+    html: body,
   });
 
-  logger.info("successfully sent!");
-
   await client.close();
+}
 
-  logger.info("closed connection");
+function buildMailBody(tickets: TicketType[]): string {
+  const ticketRows = tickets.map(ticket => `
+    <tr>
+      <th>${ticket.name}</th>
+      <th>${ticket.price}</th>
+      <th>${ticket.status}</th>
+    </tr>`).join("")
+  return `
+    <h1>New tickets available!</h1>
+    <table border="1" cellpadding="10">
+      <tr>
+        <th>Ticket</th>
+        <th>Price</th>
+        <th>Status</th>
+      </tr>${ticketRows}
+    </table>
+    <br/>
+    <a href="${ticketSite}">Click here</a> to book them!
+  `
+}
+
+try {
+  logger.info("getting ticket page")
+
+  const res = await fetch(ticketSite)
+  assert(res.status === 200, "Failed to fetch page")
+
+  const tickets = getTicketTypes(await res.text())
+  const available = tickets.filter(t => t.status !== 'sold out')
+
+  if (available.length > 0) {
+    logger.info("tickets available!", { tickets: available })
+    logger.info("notifying")
+    await sendMail(username, password, "New tickets!", buildMailBody(available))
+    logger.info("notified through email");
+  } else {
+    logger.info("all tickets sold out!", { tickets: tickets })
+  }
+} catch (exception) {
+  logger.error(exception)
+  Deno.exit(1)
 }
