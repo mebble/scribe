@@ -1,7 +1,7 @@
 import { assert } from "jsr:@std/assert";
 import { SMTPClient } from "https://deno.land/x/denomailer@1.6.0/mod.ts";
 import Logger from "https://deno.land/x/logger@v1.1.6/logger.ts";
-import { DOMParser } from "jsr:@b-fuze/deno-dom";
+import { DOMParser, Element } from "jsr:@b-fuze/deno-dom";
 
 import "jsr:@std/dotenv/load";
 
@@ -16,7 +16,7 @@ type TicketType = {
   status: string;
 }
 
-function parseTicketBox(elem, selector) {
+function parseTicketBox(elem: Element, selector: string) {
   const found =  elem.querySelector(selector)!
   assert(found, "Failed to parse the ticket box!")
   return found.textContent
@@ -42,7 +42,7 @@ function getTicketTypes(html: string): TicketType[] {
   return ticketTypes
 }
 
-async function sendMail(username, password, subject, body) {
+async function sendMail(username: string, password: string, subject: string, body: string) {
   const client = new SMTPClient({
     connection: {
       hostname: "smtp.gmail.com",
