@@ -1,0 +1,15 @@
+{
+  "version": "3",
+  "remote": {
+    "https://cdn.jsdelivr.net/npm/dayjs/+esm": "33fc840fc9f301e269568e77d6858adcc5fcda5963d8fb47b5d78f8b0a480c5b",
+    "https://cdn.skypack.dev/-/immutable@v4.2.4-m7dApuDNlmz8079A2rbA/dist=es2019,mode=imports/optimized/immutable.js": "7e58ca40e4bbfdd8718cb91a1d5b3b76c054dc1f2da81fc3b66c42317db64ba3",
+    "https://cdn.skypack.dev/-/lodash-es@v4.17.21-rDGl8YjBUjcrrAbjNrmo/dist=es2019,mode=imports/optimized/lodash-es.js": "4a1b35d34b5e0d3ae68aa46ddaabb9700ccecb75b830974db7c46a271f10daa8",
+    "https://cdn.skypack.dev/error/unknown:lodash?from=lodash-es": "c042c6105b8140042d5fe8fc6406d0a2296b10a94e5e0a31c0c68bc9b84e6ec5",
+    "https://cdn.skypack.dev/immutable?dts": "9ff04ec2a473320d075c090485960e48287c31ac679a585ceee94dc9337a7d3f",
+    "https://cdn.skypack.dev/lodash-es?dts": "7dc1d11c01e46bf442774791267f7ca93f6cc204451ac648f2560b0cd6c91524",
+    "https://deno.land/std@0.165.0/fmt/colors.ts": "9e36a716611dcd2e4865adea9c4bec916b5c60caad4cdcdc630d4974e6bb8bd4",
+    "https://deno.land/std@0.165.0/testing/_diff.ts": "a23e7fc2b4d8daa3e158fa06856bedf5334ce2a2831e8bf9e509717f455adb2c",
+    "https://deno.land/std@0.165.0/testing/_format.ts": "cd11136e1797791045e639e9f0f4640d5b4166148796cad37e6ef75f7d7f3832",
+    "https://deno.land/std@0.165.0/testing/asserts.ts": "1e340c589853e82e0807629ba31a43c84ebdcdeca910c4a9705715dfdb0f5ce8"
+  }
+}
